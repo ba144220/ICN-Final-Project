@@ -21,8 +21,7 @@ if you want to add your own .mp4 file
 please put the file in ./server/videos along with its .mp3 file  
 ( mp4 to mp3 transform can be done by executing the file mp4_to_mp3.py in ./server )
 
-after adding the required file to ./server/videos, please modify the FILE_LIST list in  
-./server/MainServer.py.
+after adding the required file to ./server/videos, please modify the FILE_LIST list in ./server/MainServer.py.
 
 ## SERVER
 
