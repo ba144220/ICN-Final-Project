@@ -260,10 +260,12 @@ class ClientWindow(QMainWindow):
         # frame = self.Client.get_next_frame()
         dataTuple = self.Client.receive_rtp_packet()
         self.max_width = 600
+        self.lostPacketCount = 0
 
-        if dataTuple:
+        if dataTuple!=-1 and dataTuple!=None:
             data, dataType = dataTuple
             if data is not None and dataType == "IMAGE":
+                self.lostPacketCount = 0
                 # pix = QPixmap.fromImage(ImageQt(frame[0]).copy())
                 # pix = QPixmap(frame)
                 height, width, channel = data.shape
@@ -277,6 +279,7 @@ class ClientWindow(QMainWindow):
                 print("update_image")
                 # time.sleep(0.5)
             elif data is not None and dataType == "AUDIO":
+                self.lostPacketCount = 0
                 print('='*10+"AUDIO"+'='*10)
                 soundArray = np.frombuffer(data, dtype='int16') 
                 print(soundArray.shape)
@@ -289,13 +292,30 @@ class ClientWindow(QMainWindow):
                 soundwav = pygame.mixer.Sound(soundArray)    
                 soundwav.play()
             else:
+                if self.lostPacketCount > 10:
+                    print("Cannot recv pkts")
+                    self.STATE = 'IDLE'
+                    self.handle_TEARDOWN()
+                self.lostPacketCount += 1
                 print("Frame None")
-                self.STATE = 'IDLE'
-                self.handle_TEARDOWN()
-        else:
-            print("Frame None")
+
+                
+
+                # self.STATE = 'IDLE'
+                # self.handle_TEARDOWN()
+        elif dataTuple==-1:
+            print("Video ends")
             self.STATE = 'IDLE'
             self.handle_TEARDOWN()
+        else:
+            if self.lostPacketCount > 10:
+                print("Cannot recv pkts")
+                self.STATE = 'IDLE'
+                self.handle_TEARDOWN()
+            self.lostPacketCount += 1
+            print("Frame None")
+            # self.STATE = 'IDLE'
+            # self.handle_TEARDOWN()
 
 
     def RTP_setup(self):

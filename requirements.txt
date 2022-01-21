@@ -3,3 +3,8 @@ PyQt5==5.13.1
 PyQt5-sip==12.7.0
 sockets
 pygame
+pydub
+numpy
+cv2
+
+

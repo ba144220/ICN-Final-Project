@@ -176,7 +176,7 @@ class Client:
                 print(Bcolors.WARNING+'[client] Last frame' + Bcolors.ENDC)
                 self.rtpSocket.close()
                 self.rtpConnected = False
-                return None
+                return -1
             
             if rtpPacket.getPayloadType()==0:
                 if rtpPacket.getMarker()==1:
