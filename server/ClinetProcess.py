@@ -71,7 +71,6 @@ class ClientProcess:
                     self.rtpSocket.close()
                 return
                 
-                return
     
     def handle_rtsp_req(self, undecodedData):
         ''' handel rtsp requesets '''
@@ -149,8 +148,8 @@ class ClientProcess:
     def handle_pause(self, seqNum):
         print(Bcolors.BOLD+Bcolors.OKCYAN+"PAUSE"+Bcolors.ENDC)
         rtsp = Rtsp()
-        self.sendRtpEvent.set()
         self.clientRtspSocket.send(rtsp.replyRtsp(rtsp.OK, seqNum, 0))
+        self.sendRtpEvent.set()
         
     def handle_teardown(self, seqNum):
         print(Bcolors.BOLD+Bcolors.OKCYAN+"TEARDOWN"+Bcolors.ENDC)
@@ -177,6 +176,9 @@ class ClientProcess:
         send = True
         count = 0
 
+        if self.sendRtpEvent.isSet():
+            return
+
         totalFrameNumber, totalAudioNumber, frameRate = self.videoStream.get_basic_info()
         if totalAudioNumber > 0:
             print(totalFrameNumber/totalAudioNumber)
@@ -186,9 +188,13 @@ class ClientProcess:
                 count = (count + 1)%(totalFrameNumber//totalAudioNumber)
             else:
                 count = 1
+
+
             # Stop sending if the event is set(due to PAUSE or TEARDOWN)
             if self.sendRtpEvent.isSet():
                 break
+
+
             dataTuple = self.videoStream.get_next_frame()
             if not dataTuple:
                 self.videoStream.set_current_frameNumber(0)
@@ -199,6 +205,8 @@ class ClientProcess:
 
 
             if count==0 and totalAudioNumber != 0:
+                if self.sendRtpEvent.isSet():
+                    return
                 audio = self.videoStream.get_next_audio()
                 if not audio:
                     self.videoStream.set_current_frameNumber(0)
@@ -212,7 +220,6 @@ class ClientProcess:
                     else:
                         rtpPacket.encode(2,0,0,0,0,10,totalFrameNumber - frameNumber - 1,0,audio[i])
                     self.rtpSocket.sendto(rtpPacket.getPacket(), (clientAddr, port))
-                    print(Bcolors.OKCYAN + "[server] Sending audio: " + str(totalFrameNumber - frameNumber - 1) + Bcolors.ENDC) 
 
             if(frameNumber>=totalFrameNumber-1):
                 send = False
@@ -221,6 +228,8 @@ class ClientProcess:
             if data:
                 
                 for i in range(len(data)):
+                    if self.sendRtpEvent.isSet():
+                        return
                     rtpPacket = RtpPacket()
                     if i == len(data)-1:
                         rtpPacket.encode(2,0,0,0,1,0,totalFrameNumber - frameNumber - 1,0,data[i])
@@ -233,7 +242,6 @@ class ClientProcess:
                         clientAddr = self.clientAddr[0]
                         
                         self.rtpSocket.sendto(rtpPacket.getPacket(), (clientAddr, port))
-                        print(Bcolors.OKBLUE + "[server] Sending frame: " + str(totalFrameNumber - frameNumber - 1) + Bcolors.ENDC) 
                     except:
                         print(Bcolors.FAIL + "[server] Connection Error" + Bcolors.ENDC)  
                         print('-'*60)

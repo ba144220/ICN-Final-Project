@@ -167,7 +167,7 @@ class Client:
         self.videoBuf = bytearray()
 
         while True:
-            indata, addr = self.rtpSocket.recvfrom(65536)
+            indata, addr = self.rtpSocket.recvfrom(2048)
             #print(Bcolors.WARNING + 'Received Something' + Bcolors.ENDC)
             rtpPacket = RtpPacket()
             rtpPacket.decode(indata)
