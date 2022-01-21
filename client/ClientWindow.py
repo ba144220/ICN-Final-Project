@@ -283,6 +283,7 @@ class ClientWindow(QMainWindow):
                     soundArray = np.multiply(soundArray, self.filt).astype(np.int16)
                 except:
                     pass
+                
                 soundwav = pygame.mixer.Sound(soundArray)    
                 soundwav.play()
             else:
