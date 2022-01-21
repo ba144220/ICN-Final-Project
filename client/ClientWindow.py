@@ -125,11 +125,16 @@ class ClientWindow(QMainWindow):
         # control_layout.addWidget(self.pushButton_3)
         self.pushButton_2 = QtWidgets.QPushButton()
         # self.pushButton_2.setEnabled(False)
-        # self.setButtonStat(self.pushButton_2, False)
-        self.pushButton_2.setEnabled(False)
-        self.pushButton_2.setIcon(self.style().standardIcon(QStyle.SP_MediaPlay))
-        self.pushButton_2.clicked.connect(self.handle_START_PAUSE)
+        self.setButtonStat(self.pushButton_2, True)
+        # self.pushButton_2.setEnabled(False)
+        # self.pushButton_2.setIcon(self.style().standardIcon(QStyle.SP_MediaPlay))
+        self.pushButton_2.clicked.connect(self.handle_START)
         control_layout.addWidget(self.pushButton_2)
+
+        self.pushButton_3 = QtWidgets.QPushButton()
+        self.setButtonStat(self.pushButton_3, False)
+        self.pushButton_3.clicked.connect(self.handle_PAUSE)
+        control_layout.addWidget(self.pushButton_3)
 
         self.pushButton_4 = QtWidgets.QPushButton()
         # self.pushButton_4.setGeometry(QtCore.QRect(550, 460, 113, 32))
@@ -178,16 +183,16 @@ class ClientWindow(QMainWindow):
         
         self.pushButton_2 = QtWidgets.QPushButton()
         # self.pushButton_2.setEnabled(False)
-        # self.setButtonStat(self.pushButton_2, False)
-        self.pushButton_2.setEnabled(False)
-        self.pushButton_2.setIcon(self.style().standardIcon(QStyle.SP_MediaPlay))
-        self.pushButton_2.clicked.connect(self.handle_START_PAUSE)
+        self.setButtonStat(self.pushButton_2, True)
+        # self.pushButton_2.setEnabled(False)
+        # self.pushButton_2.setIcon(self.style().standardIcon(QStyle.SP_MediaPlay))
+        self.pushButton_2.clicked.connect(self.handle_START)
         
 
-        # self.pushButton_3 = QtWidgets.QPushButton()
-        # # self.pushButton_3.setEnabled(False)
-        # self.setButtonStat(self.pushButton_3, False)
-        # self.pushButton_3.clicked.connect(self.handle_PAUSE)
+        self.pushButton_3 = QtWidgets.QPushButton()
+        # self.pushButton_3.setEnabled(False)
+        self.setButtonStat(self.pushButton_3, False)
+        self.pushButton_3.clicked.connect(self.handle_PAUSE)
         
         
         self.pushButton_4 = QtWidgets.QPushButton()
@@ -237,8 +242,8 @@ class ClientWindow(QMainWindow):
         _translate = QtCore.QCoreApplication.translate
         # MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
         # self.pushButton.setText(_translate("MainWindow", " SETUP"))
-        # self.pushButton_2.setText(_translate("MainWindow", "START"))
-        # self.pushButton_3.setText(_translate("MainWindow", "PAUSE"))
+        self.pushButton_2.setText(_translate("MainWindow", "START"))
+        self.pushButton_3.setText(_translate("MainWindow", "PAUSE"))
         self.pushButton_4.setText(_translate("MainWindow", "TEARDOWN"))
         self.pushButton_5.setText(_translate("MainWindow", "previous"))
         self.pushButton_6.setText(_translate("MainWindow", "next"))
@@ -332,59 +337,59 @@ class ClientWindow(QMainWindow):
         self.RTP_setup()
         print("SETUP button clicked")
         # self.setButtonStat(self.pushButton, False)
-        # self.setButtonStat(self.pushButton_2, True)
-        self.pushButton_2.setEnabled(True)
-        # self.setButtonStat(self.pushButton_3, False)
+        self.setButtonStat(self.pushButton_2, True)
+        # self.pushButton_2.setEnabled(True)
+        self.setButtonStat(self.pushButton_3, False)
         self.setButtonStat(self.pushButton_4, True)
         self.setButtonStat(self.speed_Button, True)
 
 
-    # def handle_START(self):
-    #     print("START button clicked")
+    def handle_START(self):
+        print("START button clicked")
+        # self.Client.send_play_request()
+        self.STATE="START"
+        # self.start_video()
+        # self.GOGO()
+        self.setButtonStat(self.pushButton_2, False)
+        self.setButtonStat(self.pushButton_3, True)
+        self.setButtonStat(self.pushButton_4, True)
+
+        self.Client.play(self.file_list[self.file_flag])
+
+    def handle_PAUSE(self):
+        print("PAUSE button clicked")
+        # self.Client.send_pause_request()
+        self.STATE="PAUSE"
+        self.setButtonStat(self.pushButton_2, True)
+        self.setButtonStat(self.pushButton_3, False)
+        self.setButtonStat(self.pushButton_4, True)
+
+        self.Client.pause(self.file_list[self.file_flag])
+
+    # def handle_START_PAUSE(self):  # same button now
+    #     print("START/PAUSE button clicked")
     #     # self.Client.send_play_request()
-    #     self.STATE="START"
+    #     if self.STATE=="START":
+    #         self.STATE="PAUSE"
+    #         self.pushButton_2.setIcon(
+    #             self.style().standardIcon(QStyle.SP_MediaPlay)
+    #         )
+    #         self.Client.pause(self.file_list[self.file_flag])
+
+    #     # elif self.STATE=="PAUSE":
+    #     else:
+    #         self.STATE="START"
+    #         self.pushButton_2.setIcon(
+    #             self.style().standardIcon(QStyle.SP_MediaPause)
+    #         )
+    #         self.Client.play(self.file_list[self.file_flag])
     #     # self.start_video()
     #     # self.GOGO()
     #     # self.setButtonStat(self.pushButton_2, False)
-    #     self.setButtonStat(self.pushButton_3, True)
-    #     self.setButtonStat(self.pushButton_4, True)
+    #     # self.setButtonStat(self.pushButton_3, True)
+    #     # self.setButtonStat(self.pushButton_4, True)
 
     #     self.Client.play(self.file_list[self.file_flag])
-
-    # def handle_PAUSE(self):
-    #     print("PAUSE button clicked")
-    #     # self.Client.send_pause_request()
-    #     self.STATE="PAUSE"
-    #     self.setButtonStat(self.pushButton_2, True)
-    #     self.setButtonStat(self.pushButton_3, False)
-    #     self.setButtonStat(self.pushButton_4, True)
-
-    #     self.Client.pause(self.file_list[self.file_flag])
-
-    def handle_START_PAUSE(self):  # same button now
-        print("START/PAUSE button clicked")
-        # self.Client.send_play_request()
-        if self.STATE=="START":
-            self.STATE="PAUSE"
-            self.pushButton_2.setIcon(
-                self.style().standardIcon(QStyle.SP_MediaPlay)
-            )
-            self.Client.pause(self.file_list[self.file_flag])
-
-        # elif self.STATE=="PAUSE":
-        else:
-            self.STATE="START"
-            self.pushButton_2.setIcon(
-                self.style().standardIcon(QStyle.SP_MediaPause)
-            )
-            self.Client.play(self.file_list[self.file_flag])
-        # self.start_video()
-        # self.GOGO()
-        # self.setButtonStat(self.pushButton_2, False)
-        # self.setButtonStat(self.pushButton_3, True)
-        # self.setButtonStat(self.pushButton_4, True)
-
-        self.Client.play(self.file_list[self.file_flag])
 
     
     def handle_TEARDOWN(self):
