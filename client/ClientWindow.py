@@ -29,13 +29,15 @@ class ClientWindow(QMainWindow):
     _update_image_signal = pyqtSignal()
     def __init__(
             self,
+            rtspServerHost,
+            rtspServerPort,
             file_flag=0,
             parent=None):
         super(ClientWindow, self).__init__(parent)
         # self.Client = Client(file_name, host_address, host_port, rtp_port)
         # self.Client = Client(file_list[file_flag], host_address, host_port, rtp_port)
         # self.Client = Client('192.168.0.227',3000)
-        self.Client = Client('127.0.0.1',3011)
+        self.Client = Client(rtspServerHost,rtspServerPort)
         self.Client.connect_rtsp_server()    
         self.file_list = self.Client.get_file_list()
 
@@ -283,7 +285,7 @@ class ClientWindow(QMainWindow):
                     soundArray = np.multiply(soundArray, self.filt).astype(np.int16)
                 except:
                     pass
-                
+
                 soundwav = pygame.mixer.Sound(soundArray)    
                 soundwav.play()
             else:

@@ -19,4 +19,5 @@ FILE_LIST = [
     ]
 
 if __name__ == "__main__":
-    server = Server(fileList=FILE_LIST)
+    portNum = int(input(Bcolors.WARNING +"Please enter the port number: "+Bcolors.ENDC))
+    server = Server(rtspPort=portNum,  fileList=FILE_LIST)
